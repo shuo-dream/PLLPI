@@ -1,0 +1,38 @@
+好的，对蛋白质和RNA序列进行深入分析以提取特征，是预测它们相互作用的基石。这些特征可以分为以下几大类：
+
+一、蛋白质序列特征
+1. 序列基础特征
+氨基酸组成 (AAC)： 整个序列中20种标准氨基酸的频率或百分比。
+二肽/三肽组成 (Dipeptide/Tripeptide Composition)： 连续两个或三个氨基酸的组合频率。能捕捉短程序列模式。
+位置特异性评分矩阵 (PSSM)： 通过工具（如 PSI-BLAST）生成。它反映了每个氨基酸位置在进化过程中的保守性和被其他氨基酸替换的可能性。这是最重要和最常用的特征之一，因为它包含了进化信息。
+物理化学属性 (Physicochemical Properties)： 每个残基的多种物化属性，通常编码为数值。
+疏水性 (Hydrophobicity)
+电荷 (Charge)
+极性 (Polarity)
+侧链体积 (Side chain volume)
+等电点 (pI)
+2. 结构相关特征（预测）
+二级结构 (Secondary Structure)： 预测每个残基属于α-螺旋 (H)、β-折叠 (E)、或无规卷曲 (C) 的概率。常用工具： PSIPRED, DSSP。
+溶剂可及性 (Solvent Accessible Surface Area, SASA)： 预测每个残基是暴露在溶剂中（可能参与结合）还是被包裹在蛋白质内部。常用工具： DSSP, ACCpro。
+内在无序区域 (Intrinsically Disordered Regions, IDRs)： 预测序列中缺乏稳定三维结构的柔性区域。许多RNA结合蛋白通过IDRs与RNA相互作用。常用工具： IUPred, DISOPRED, SPOT-Disorder。
+3. 功能与进化特征
+功能域和模体 (Functional Domains and Motifs)： 识别已知的RNA结合域 (RBDs)，这是最强的结合指示信号。
+常见RBDs： RRM, KH, DEAD-box, Pumilio, Zinc finger 等。
+常用工具： Pfam, InterProScan。
+共进化信息 (Co-evolution Information)： 更高级的分析，通过分析多序列比对(MSA)来寻找蛋白质内部或蛋白质与RNA之间共同进化的残基对。这暗示了它们功能上的关联。
+二、RNA序列特征
+1. 序列基础特征
+核苷酸组成 (NAC)： A, U, C, G 四种核苷酸的频率或百分比。
+二核苷酸/三核苷酸组成 (Dinucleotide/Trinucleotide Composition)： 类似于蛋白质的二肽/三肽，捕捉短序列模式。
+k-mer 频率： 长度为k的所有可能子序列的频率。
+2. 结构相关特征（预测）
+二级结构 (Secondary Structure)： 这是RNA最重要的特征之一。预测每个核苷酸属于茎（双链）、环（单链）等元件的概率。蛋白质通常特异性地识别特定的RNA二级结构。
+常用工具： RNAfold (ViennaRNA), MXfold。
+碱基配对概率 (Base Pairing Probabilities)： 比简单的二级结构更丰富，它提供了一个矩阵，表示每个核苷酸i与核苷酸j配对的概率。这包含了所有可能结构的整体信息。
+溶剂可及性 (SASA)： 预测核苷酸在RNA结构中的可接触程度。
+3. 功能特征
+保守性 (Conservation)： 通过比对相关RNA序列（例如在不同物种中），找出高度保守的区域，这些区域可能具有重要的功能（如蛋白质结合）。
+序列模体 (Sequence Motifs)： 识别可能与特定蛋白质家族结合的特定短序列模式（例如，富含U或A的序列常被某些RBP识别）。不同的特征算不算多模态的数据
+
+
+三级结构

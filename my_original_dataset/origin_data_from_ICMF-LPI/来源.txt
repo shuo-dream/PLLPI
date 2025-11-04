@@ -1,0 +1,3 @@
+从Inter-view contrastive learning and miRNA fusion for lncRNA-protein interaction prediction in heterogeneous graphs这个文章中提供的GitHub中获取
+
+https://github.com/yuutmoo/ICMF-LPI.
