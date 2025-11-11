@@ -1,0 +1,18 @@
+{
+    "lr": 0.00021176476524901813,
+    "batch_size": 64,
+    "epochs_num": 148,
+    "hidden_dim": 128,
+    "num_layers": 4,
+    "dropout_rate": 0.3393164581210377,
+    "weight_decay": 0.00039591814148208206,
+    "physics_loss_weight": 0.004542719139145449,
+    "head_num": 4,
+    "scheduler_factor": 0.8804738858998544,
+    "scheduler_patience": 10,
+    "early_stopping_patience": 19,
+    "grad_clip_norm": 3.05571957631437,
+    "warmup_epochs": 1,
+    "deep_feature_num_layers": 4,
+    "best_f1_score": 0.9965217391304347
+}

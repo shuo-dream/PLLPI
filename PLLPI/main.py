@@ -4,6 +4,7 @@ import pandas as pd
 from tqdm import tqdm
 import torch
 import os
+import json
 from data_load import Load_data
 from model.PLLPI import PLLPI
 from utils import set_random_seeds, debug_graph_structure, metrics
@@ -22,7 +23,60 @@ parser.add_argument('--optimizer', type=str, default='AdamW')
 parser.add_argument('--dataset', type=str,
                     default=r'G:\shen_cong\my\my_project\my_original_dataset\dataset\datasets\dataset1.txt')
 parser.add_argument('--output_dir', type=str, default='output', help='输出目录，用于保存图表等')
+parser.add_argument('--warmup_epochs', type=int, default=5, help='warmup预热轮数')
+parser.add_argument('--hidden_dim', type=int, default=64, help='隐藏层维度')
+parser.add_argument('--num_layers', type=int, default=8, help='卷积层数量')
+parser.add_argument('--dropout_rate', type=float, default=0.2, help='Dropout率')
+parser.add_argument('--weight_decay', type=float, default=1e-4, help='权重衰减')
+parser.add_argument('--load_best_params', type=str, default=None, help='从JSON文件加载最佳超参数')
+
 import traceback
+
+
+def load_best_parameters(args):
+    """
+    从JSON文件加载最佳超参数
+
+    Args:
+        args: 命令行参数对象
+
+    Returns:
+        bool: 是否成功加载参数
+    """
+    if not args.load_best_params:
+        return False
+
+    try:
+        if not os.path.exists(args.load_best_params):
+            print(f"错误: 找不到最佳参数文件 {args.load_best_params}")
+            return False
+
+        with open(args.load_best_params, 'r', encoding='utf-8') as f:
+            best_params = json.load(f)
+
+        # 更新参数
+        args.lr = best_params.get('lr', args.lr)
+        args.batch_size = best_params.get('batch_size', args.batch_size)
+        args.epochs_num = best_params.get('epochs_num', args.epochs_num)
+        args.hidden_dim = best_params.get('hidden_dim', args.hidden_dim)
+        args.num_layers = best_params.get('num_layers', args.num_layers)
+        args.dropout_rate = best_params.get('dropout_rate', args.dropout_rate)
+        args.weight_decay = best_params.get('weight_decay', args.weight_decay)
+
+        print(f"已从 {args.load_best_params} 成功加载最佳超参数:")
+        for key, value in best_params.items():
+            if key != 'best_f1_score':
+                print(f"  {key}: {value}")
+        print(f"  对应的最佳F1分数: {best_params.get('best_f1_score', 'N/A')}")
+
+        return True
+    except json.JSONDecodeError:
+        print(f"错误: 无法解析JSON文件 {args.load_best_params}")
+        return False
+    except Exception as e:
+        print(f"加载最佳参数时出错: {e}")
+        return False
+
 
 # 解析命令行参数
 args = parser.parse_args()
@@ -41,7 +95,7 @@ args.device = device
 print(f'使用设备：{device}')
 
 
-def train(model, optimizer, train_batch_data):
+def train(model, optimizer, train_batch_data, epoch, warmup_epochs):
     model.train()
     train_loss = 0
     all_labels = []
@@ -66,8 +120,15 @@ def train(model, optimizer, train_batch_data):
 
         # 反向传播
         total_loss.backward()  # 移除retain_graph=True
+
+        # 实现warmup学习率调整
+        if epoch < warmup_epochs:
+            warmup_factor = (epoch + 1) / warmup_epochs
+            for param_group in optimizer.param_groups:
+                param_group['lr'] = args.lr * warmup_factor
+
         # 梯度裁剪，防止梯度爆炸
-        # torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
         # 更新参数
         optimizer.step()
 
@@ -134,6 +195,25 @@ def eval(model, optimizer, eval_batch_data):
 
 def main():
     try:
+        # 检查是否有通过命令行指定的参数文件
+        if args.load_best_params:
+            # 如果指定了最佳参数文件，则加载参数
+            if load_best_parameters(args):
+                print("使用加载的最佳参数进行训练")
+            else:
+                print("无法加载指定的最佳参数文件，使用默认参数进行训练")
+        else:
+            # 检查默认路径下是否存在best_hyperparameters.json文件
+            default_param_file = r'E:\\postgraduate\\y2025\\CWS\\my\\my_project\\PLLPI\\best_hyperparameters.json'
+            if os.path.exists(default_param_file):
+                args.load_best_params = default_param_file
+                if load_best_parameters(args):
+                    print("使用默认路径下的最佳参数进行训练")
+                else:
+                    print("无法加载默认路径下的最佳参数文件，使用默认参数进行训练")
+            else:
+                print("未找到最佳参数文件，使用默认参数进行训练")
+
         interaction_lable_data = pd.read_csv(
             r'E:\postgraduate\y2025\CWS\my\my_project\PLLPI\dataset\data1\lncRNA_protein_interaction_matrix.csv',
             index_col=0, header=0)
@@ -153,8 +233,8 @@ def main():
         aggregated_feature_data = load_and_aggregate_features(
             args,
             heterogeneous_graph_data,
-            hidden_dim=128,
-            num_layers=2,
+            hidden_dim=args.hidden_dim,
+            num_layers=args.num_layers,
             agg_type='gcn'
         )
         print('邻居节点信息聚合完成')
@@ -189,11 +269,20 @@ def main():
 
         print('数据加载完成')
         # 初始化模型
+        # 获取实际特征维度
+        sample_batch = next(iter(train_batch_data))
+        lncrna_dim = sample_batch['lncrna_features'].shape[1]
+        protein_dim = sample_batch['protein_features'].shape[1]
+        print(f"实际lncrna特征维度: {lncrna_dim}")
+        print(f"实际protein特征维度: {protein_dim}")
+
         model = PLLPI(
-            lncrna_dim=128,
-            protein_dim=128
+            lncrna_dim=lncrna_dim,
+            protein_dim=protein_dim,
+            hidden_dim=args.hidden_dim,
+            dropout_rate=args.dropout_rate
         ).to(device)
-        optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=1e-4)
+        optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
         # 添加学习率调度器
         scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=5)
 
@@ -202,13 +291,20 @@ def main():
         eval_metrics_history = []
         train_losses = []
         eval_losses = []
+        learning_rates = []  # 记录学习率变化
 
         for epoch in range(args.epochs_num):
-            train_output, train_metrics = train(model, optimizer, train_batch_data)
+            train_output, train_metrics = train(model, optimizer, train_batch_data, epoch, args.warmup_epochs)
             eval_output, eval_metrics = eval(model, optimizer, eval_batch_data)
             # 更新学习率
             scheduler.step(eval_output)
-            print(f"Epoch {epoch + 1}/{args.epochs_num}, Train Loss: {train_output:.4f}, Eval Loss: {eval_output:.4f}")
+
+            # 获取当前学习率
+            current_lr = optimizer.param_groups[0]['lr']
+            learning_rates.append(current_lr)
+
+            print(
+                f"Epoch {epoch + 1}/{args.epochs_num}, LR: {current_lr:.6f}, Train Loss: {train_output:.4f}, Eval Loss: {eval_output:.4f}")
             print(
                 f"  Train Metrics - Acc: {train_metrics['accuracy']:.4f}, Prec: {train_metrics['precision']:.4f}, Rec: {train_metrics['recall']:.4f}, F1: {train_metrics['f1']:.4f}, AUC: {train_metrics['auc']:.4f}, AUPR: {train_metrics['aupr']:.4f}")
             print(

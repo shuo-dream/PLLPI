@@ -1,0 +1,31 @@
+=== 平均指标 ===
+训练集平均指标:
+  Accuracy: 0.9550
+  Precision: 0.9499
+  Recall: 0.9444
+  F1: 0.9413
+  Auc: 0.9682
+  Aupr: 0.9636
+测试集平均指标:
+  Accuracy: 0.9563
+  Precision: 0.9309
+  Recall: 0.9412
+  F1: 0.9359
+  Auc: 0.9799
+  Aupr: 0.9791
+
+=== 最好和最差指标 ===
+最好指标 (Epoch 57):
+  Accuracy: 0.9910
+  Precision: 0.9845
+  Recall: 0.9983
+  F1: 0.9913
+  Auc: 0.9974
+  Aupr: 0.9972
+最差指标 (Epoch 1):
+  Accuracy: 0.4819
+  Precision: 0.0000
+  Recall: 0.0000
+  F1: 0.0000
+  Auc: 0.5716
+  Aupr: 0.5844

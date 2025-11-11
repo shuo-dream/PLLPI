@@ -1,0 +1,64 @@
+=== 平均指标 ===
+训练集平均指标:
+  Accuracy: 0.9524
+  Precision: 0.9463
+  Recall: 0.9589
+  F1: 0.9508
+  Auc: 0.9778
+  Aupr: 0.9690
+测试集平均指标:
+  Accuracy: 0.9534
+  Precision: 0.9484
+  Recall: 0.9671
+  F1: 0.9566
+  Auc: 0.9812
+  Aupr: 0.9751
+
+=== 最好和最差指标 ===
+最好指标 (Epoch 73):
+  Accuracy: 0.9828
+  Precision: 0.9843
+  Recall: 0.9825
+  F1: 0.9834
+  Auc: 0.9962
+  Aupr: 0.9960
+最差指标 (Epoch 2):
+  Accuracy: 0.8183
+  Precision: 0.7403
+  Recall: 1.0000
+  F1: 0.8508
+  Auc: 0.9081
+  Aupr: 0.8977
+
+优化参数后的
+=== 平均指标 ===
+训练集平均指标:
+  Accuracy: 0.9546
+  Precision: 0.9447
+  Recall: 0.9645
+  F1: 0.9533
+  Auc: 0.9784
+  Aupr: 0.9713
+测试集平均指标:
+  Accuracy: 0.9552
+  Precision: 0.9485
+  Recall: 0.9690
+  F1: 0.9577
+  Auc: 0.9824
+  Aupr: 0.9719
+
+=== 最好和最差指标 ===
+最好指标 (Epoch 79):
+  Accuracy: 0.9828
+  Precision: 0.9843
+  Recall: 0.9825
+  F1: 0.9834
+  Auc: 0.9961
+  Aupr: 0.9918
+最差指标 (Epoch 2):
+  Accuracy: 0.7722
+  Precision: 0.9235
+  Recall: 0.6108
+  F1: 0.7353
+  Auc: 0.9443
+  Aupr: 0.9220

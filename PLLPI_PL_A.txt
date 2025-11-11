@@ -1,0 +1,65 @@
+默认参数
+=== 平均指标 ===
+训练集平均指标:
+  Accuracy: 0.9059
+  Precision: 0.8668
+  Recall: 0.9572
+  F1: 0.9096
+  Auc: 0.9533
+  Aupr: 0.9357
+测试集平均指标:
+  Accuracy: 0.8998
+  Precision: 0.8650
+  Recall: 0.9602
+  F1: 0.9094
+  Auc: 0.9531
+  Aupr: 0.9347
+
+=== 最好和最差指标 ===
+最好指标 (Epoch 13):
+  Accuracy: 0.9150
+  Precision: 0.8882
+  Recall: 0.9564
+  F1: 0.9210
+  Auc: 0.9504
+  Aupr: 0.9279
+最差指标 (Epoch 1):
+  Accuracy: 0.5181
+  Precision: 0.5181
+  Recall: 1.0000
+  F1: 0.6825
+  Auc: 0.8190
+  Aupr: 0.7466
+
+优化参数后的
+=== 平均指标 ===
+训练集平均指标:
+  Accuracy: 0.9047
+  Precision: 0.8652
+  Recall: 0.9629
+  F1: 0.9106
+  Auc: 0.9511
+  Aupr: 0.9307
+测试集平均指标:
+  Accuracy: 0.9029
+  Precision: 0.8646
+  Recall: 0.9675
+  F1: 0.9126
+  Auc: 0.9486
+  Aupr: 0.9305
+
+=== 最好和最差指标 ===
+最好指标 (Epoch 22):
+  Accuracy: 0.9159
+  Precision: 0.9000
+  Recall: 0.9424
+  F1: 0.9207
+  Auc: 0.9519
+  Aupr: 0.9262
+最差指标 (Epoch 1):
+  Accuracy: 0.5181
+  Precision: 0.5181
+  Recall: 1.0000
+  F1: 0.6825
+  Auc: 0.5642
+  Aupr: 0.5865
